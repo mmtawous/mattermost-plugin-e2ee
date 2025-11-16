@@ -281,7 +281,7 @@ run a shell within this container, you can do `docker exec -it mminstance
 
 Based on [these instructions](https://github.com/mattermost/mattermost-plugin-starter-template#deploying-with-local-mode).
 
-First, copy `dev.env.example` into `dev.example`, and setup the user token you
+First, copy `dev.env.example` into `dev.env`, and setup the user token you
 just created above. Then:
 
 ```
