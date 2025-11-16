@@ -11,7 +11,7 @@ import {E2EEUnknownRecipient} from 'e2ee';
 import {msgCache} from 'msg_cache';
 import {getE2EEPostUpdateSupported} from 'compat';
 
-import {E2EEPostProps} from './index';
+import type {E2EEPostProps} from './index';
 import './e2ee_post.css';
 
 export const E2EEPost: React.FC<E2EEPostProps> = (props) => {

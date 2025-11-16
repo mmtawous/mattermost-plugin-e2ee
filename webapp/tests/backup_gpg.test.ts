@@ -1,9 +1,9 @@
 import 'mattermost-webapp/tests/setup';
 
+import {generateGPGKey, initOpenGPG, finiOpenGPG} from './helpers';
+
 import {gpgEncrypt, gpgBackupFormat, gpgParseBackup} from '../src/backup_gpg';
 import {PrivateKeyMaterial} from '../src/e2ee';
-
-import {generateGPGKey, initOpenGPG, finiOpenGPG} from './helpers';
 
 const b64 = require('base64-arraybuffer');
 

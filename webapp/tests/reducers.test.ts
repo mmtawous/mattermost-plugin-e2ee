@@ -1,6 +1,7 @@
 /* eslint-disable max-nested-callbacks, no-undefined */
 
 import assert from 'assert';
+
 import {ChannelTypes} from 'mattermost-redux/action_types';
 
 import {PubKeyTypes, EncrStatutTypes, EventTypes} from '../src/action_types';

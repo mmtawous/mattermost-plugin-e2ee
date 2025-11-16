@@ -1,4 +1,4 @@
-import {PublicKeyMaterial} from './e2ee';
+import type {PublicKeyMaterial} from './e2ee';
 import {arrayBufferEqual} from './utils';
 
 const b64 = require('base64-arraybuffer');
@@ -41,7 +41,7 @@ export async function getNewChannelPubkeys(chanID: string, pubkeys: Map<string, 
     return ret;
 }
 
-export async function storeChannelPubkeys(chanID: string, pubkeys: Array<PublicKeyMaterial>) {
+export async function storeChannelPubkeys(chanID: string, pubkeys: PublicKeyMaterial[]) {
     const key = 'e2eeChannelRecipients:' + chanID;
     const val = await Promise.all(pubkeys.map((pk) => pk.id().then((v) => b64.encode(v))));
     localStorage.setItem(key, JSON.stringify(val));

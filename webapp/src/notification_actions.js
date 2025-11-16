@@ -4,6 +4,8 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
+import {showNotification} from 'notifications';
+
 import {getProfilesByIds} from 'mattermost-redux/actions/users';
 import {getChannel, getCurrentChannel, getMyChannelMember} from 'mattermost-redux/selectors/entities/channels';
 import {getConfig} from 'mattermost-redux/selectors/entities/general';
@@ -12,8 +14,6 @@ import {getCurrentUserId, getCurrentUser, getStatusForUserId, getUser} from 'mat
 import {isChannelMuted} from 'mattermost-redux/utils/channel_utils';
 import {isSystemMessage} from 'mattermost-redux/utils/post_utils';
 import {displayUsername} from 'mattermost-redux/utils/user_utils';
-
-import {showNotification} from 'notifications';
 
 const NOTIFY_TEXT_MAX_LENGTH = 50;
 

@@ -2,8 +2,8 @@
 
 import 'mattermost-webapp/tests/setup';
 
-import {webcrypto} from '../src/webcrypto';
 import {EncryptedP2PMessage, PrivateKeyMaterial, PublicKeyMaterial, getPubkeyID, E2EEValidationError, isEncryptedP2PMessageJSON} from '../src/e2ee';
+import {webcrypto} from '../src/webcrypto';
 
 const b64 = require('base64-arraybuffer');
 const subtle = webcrypto.subtle;

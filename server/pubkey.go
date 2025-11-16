@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/mattermost/mattermost-server/v5/model"
+
 )
 
 var ECCurve = elliptic.P256()

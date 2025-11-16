@@ -1,16 +1,16 @@
+import {AppPrivKeyIsDifferent} from 'privkey';
 import React from 'react';
 import {Modal} from 'react-bootstrap';
 
 import ConfirmModal from 'components/confirm_modal';
-import {AppPrivKeyIsDifferent} from 'privkey';
 
-import {E2EEImportModalProps} from './index';
+import type {E2EEImportModalProps} from './index';
 
 type E2EEImportModalState = {
-    privkey: string
-    errorMsg: string
-    showConfirmModal: boolean
-    showSuccess: boolean
+    privkey: string;
+    errorMsg: string;
+    showConfirmModal: boolean;
+    showSuccess: boolean;
 }
 
 export class E2EEImportModal extends React.Component<E2EEImportModalProps, E2EEImportModalState> {

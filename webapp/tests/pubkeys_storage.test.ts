@@ -1,8 +1,8 @@
 import 'mattermost-webapp/tests/setup';
 import {jest} from '@jest/globals';
 
-import {pubkeyStore, getNewChannelPubkeys, storeChannelPubkeys} from '../src/pubkeys_storage';
 import {PrivateKeyMaterial} from '../src/e2ee';
+import {pubkeyStore, getNewChannelPubkeys, storeChannelPubkeys} from '../src/pubkeys_storage';
 
 test('pubkeysStore', async () => {
     const privkey = await PrivateKeyMaterial.create(false /* exportable */);

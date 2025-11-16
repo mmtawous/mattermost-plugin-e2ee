@@ -1,7 +1,7 @@
-import {UserProfile} from 'mattermost-redux/types/users';
-import {Post} from 'mattermost-redux/types/posts';
-
 import {isMacApp} from 'user_agent';
+
+import {Post} from 'mattermost-redux/types/posts';
+import type {UserProfile} from 'mattermost-redux/types/users';
 
 // regular expression from mattermost-server/app/command.go. Replace :alnum: by
 // [A-Za-z0-9]. /g is necessary to be able to match all mentions.

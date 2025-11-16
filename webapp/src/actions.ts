@@ -1,13 +1,13 @@
-import {ActionFunc, DispatchFunc, GetStateFunc, ActionResult} from 'mattermost-redux/types/actions';
-import {getCurrentUserId} from 'mattermost-redux/selectors/entities/users';
 import {PostTypes} from 'mattermost-redux/action_types';
+import {getCurrentUserId} from 'mattermost-redux/selectors/entities/users';
+import type {ActionFunc, DispatchFunc, GetStateFunc, ActionResult} from 'mattermost-redux/types/actions';
 
 import {PubKeyTypes, EncrStatutTypes, ImportModalTypes, PrivKeyTypes} from './action_types';
 import {APIClient} from './client';
 import {StateID} from './constants';
-import {PrivateKeyMaterial, PublicKeyMaterial} from './e2ee';
-import {getPluginState, selectPubkeys} from './selectors';
+import type {PrivateKeyMaterial, PublicKeyMaterial} from './e2ee';
 import manifest from './manifest';
+import {getPluginState, selectPubkeys} from './selectors';
 
 const CACHE_PUBKEY_TIMEOUT = 5 * 1000; // 5s
 

@@ -1,4 +1,4 @@
-import {Post} from 'mattermost-redux/types/posts';
+import type {Post} from 'mattermost-redux/types/posts';
 
 const MAX_MSGS = 5000;
 

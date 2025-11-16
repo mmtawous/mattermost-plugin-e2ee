@@ -1,12 +1,14 @@
 import PropTypes from 'prop-types';
 import React, {useEffect, useState} from 'react';
 import {connect} from 'react-redux';
-import {ActionCreatorsMapObject, bindActionCreators, Dispatch} from 'redux';
-import {GenericAction, ActionFunc} from 'mattermost-redux/types/actions';
-import {GlobalState} from 'mattermost-redux/types/store';
-import {getCurrentChannelId} from 'mattermost-redux/selectors/entities/common';
-
+import type {ActionCreatorsMapObject, Dispatch} from 'redux';
+import {bindActionCreators} from 'redux';
 import {KEYLOCK_OPEN, KEYLOCK_CLOSED} from 'svgs';
+
+import {getCurrentChannelId} from 'mattermost-redux/selectors/entities/common';
+import type {GenericAction, ActionFunc} from 'mattermost-redux/types/actions';
+import type {GlobalState} from 'mattermost-redux/types/store';
+
 import {getChannelEncryptionMethod} from 'actions';
 import {getPluginState} from 'selectors';
 

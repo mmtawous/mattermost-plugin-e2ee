@@ -1,25 +1,26 @@
 import React from 'react';
-import {Store, Action} from 'redux';
-import {GlobalState} from 'mattermost-redux/types/store';
+import type {Store, Action} from 'redux';
+
 import {Client4} from 'mattermost-redux/client';
 import {getConfig} from 'mattermost-redux/selectors/entities/general';
+import type {GlobalState} from 'mattermost-redux/types/store';
 
-import manifest from './manifest';
 import {APIClient} from './client';
-import {getServerRoute} from './selectors';
-import Reducer from './reducers';
-import {E2EE_POST_TYPE} from './constants';
-import E2EEPost from './components/e2ee_post';
-// eslint-disable-next-line import/no-unresolved
-import {PluginRegistry} from './types/mattermost-webapp';
-import E2EEHooks from './hooks';
-import E2EEImportModal from './components/e2ee_import_modal';
 import {setE2EEPostUpdateSupported} from './compat';
+import E2EEImportModal from './components/e2ee_import_modal';
+import E2EEPost from './components/e2ee_post';
+import {E2EE_POST_TYPE} from './constants';
+import E2EEHooks from './hooks';
+import manifest from './manifest';
+import Reducer from './reducers';
+import {getServerRoute} from './selectors';
+// eslint-disable-next-line import/no-unresolved
+import type {PluginRegistry} from './types/mattermost-webapp';
 
 const b64 = require('base64-arraybuffer');
 
 export default class Plugin {
-    hooks?: E2EEHooks
+    hooks?: E2EEHooks;
 
     public async initialize(registry: PluginRegistry, store: Store<GlobalState, Action<Record<string, unknown>>>) {
         const mmconfig = getConfig(store.getState());
@@ -52,7 +53,7 @@ export default class Plugin {
 
 declare global {
     interface Window {
-        registerPlugin(id: string, plugin: Plugin): void
+        registerPlugin(id: string, plugin: Plugin): void;
     }
 }
 

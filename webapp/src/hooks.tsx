@@ -1,36 +1,37 @@
 import React from 'react';
-import {Store} from 'redux';
-import {getCurrentUser, getCurrentUserId, makeGetProfilesInChannel, getUser} from 'mattermost-redux/selectors/entities/users';
-import {getCurrentChannelId} from 'mattermost-redux/selectors/entities/common';
-import {getChannel} from 'mattermost-redux/selectors/entities/channels';
-import {Post} from 'mattermost-redux/types/posts';
-import {Channel} from 'mattermost-redux/types/channels';
-import {UserProfile} from 'mattermost-redux/types/users';
-import {Client4} from 'mattermost-redux/client';
-import * as UserActions from 'mattermost-redux/actions/users';
+import type {Store} from 'redux';
 
-import Icon from './components/icon';
-import {getPubKeys, getChannelEncryptionMethod, sendEphemeralPost, openImportModal} from './actions';
+import * as UserActions from 'mattermost-redux/actions/users';
+import {Client4} from 'mattermost-redux/client';
+import {getChannel} from 'mattermost-redux/selectors/entities/channels';
+import {getCurrentChannelId} from 'mattermost-redux/selectors/entities/common';
+import {getCurrentUser, getCurrentUserId, makeGetProfilesInChannel, getUser} from 'mattermost-redux/selectors/entities/users';
+import type {Channel} from 'mattermost-redux/types/channels';
+import type {Post} from 'mattermost-redux/types/posts';
+import type {UserProfile} from 'mattermost-redux/types/users';
+
 import {EncrStatutTypes, EventTypes, PubKeyTypes} from './action_types';
+import {getPubKeys, getChannelEncryptionMethod, sendEphemeralPost, openImportModal} from './actions';
 import {APIClient, GPGBackupDisabledError} from './client';
+import {getE2EEPostUpdateSupported} from './compat';
+import Icon from './components/icon';
 import {E2EE_CHAN_ENCR_METHOD_NONE, E2EE_CHAN_ENCR_METHOD_P2P, E2EE_POST_TYPE} from './constants';
 // eslint-disable-next-line import/no-unresolved
-import {PluginRegistry, ContextArgs} from './types/mattermost-webapp';
-import {selectPubkeys, selectPrivkey, selectKS} from './selectors';
-import {msgCache} from './msg_cache';
-import {AppPrivKey} from './privkey';
+import type {PublicKeyMaterial} from './e2ee';
 import {encryptPost, decryptPost, isEncryptedPost} from './e2ee_post';
-import {PublicKeyMaterial} from './e2ee';
-import {observeStore, isValidUsername} from './utils';
-import {MyActionResult, PubKeysState} from './types';
-import {pubkeyStore, getNewChannelPubkeys, storeChannelPubkeys} from './pubkeys_storage';
-import {getE2EEPostUpdateSupported} from './compat';
-import {shouldNotify} from './notifications';
+import {msgCache} from './msg_cache';
 import {sendDesktopNotification} from './notification_actions';
+import {shouldNotify} from './notifications';
+import {AppPrivKey} from './privkey';
+import {pubkeyStore, getNewChannelPubkeys, storeChannelPubkeys} from './pubkeys_storage';
+import {selectPubkeys, selectPrivkey, selectKS} from './selectors';
+import type {MyActionResult, PubKeysState} from './types';
+import {PluginRegistry, ContextArgs} from './types/mattermost-webapp';
+import {observeStore, isValidUsername} from './utils';
 
 export default class E2EEHooks {
-    store: Store
-    getProfilesInChannel: ReturnType<typeof makeGetProfilesInChannel>
+    store: Store;
+    getProfilesInChannel: ReturnType<typeof makeGetProfilesInChannel>;
 
     constructor(store: Store) {
         this.store = store;
@@ -161,7 +162,7 @@ export default class E2EEHooks {
         this.setChannelEncryptionMethod(chanID, method === 'none' ? 'p2p' : 'none');
     }
 
-    private async handleInit(cmdArgs: Array<string>, ctxArgs: ContextArgs) {
+    private async handleInit(cmdArgs: string[], ctxArgs: ContextArgs) {
         let msg;
         const force = cmdArgs[0] === '--force';
         const keyInBrowser = AppPrivKey.exists(this.store.getState());
@@ -301,7 +302,7 @@ export default class E2EEHooks {
             }
             const orgMsg = post.message;
 
-            const pubkeyValues: Array<PublicKeyMaterial> = Array.from(pubkeys.values());
+            const pubkeyValues: PublicKeyMaterial[] = Array.from(pubkeys.values());
 
             // Launch encryption in a promise, as in nominal operation we always need its result.
             const encryptProm = encryptPost(post, key, pubkeyValues);

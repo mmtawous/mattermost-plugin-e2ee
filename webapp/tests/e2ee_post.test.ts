@@ -1,9 +1,9 @@
 import 'mattermost-webapp/tests/setup';
 
+import {E2EE_POST_TYPE} from 'constants';
+
 import {PrivateKeyMaterial, PublicKeyMaterial, E2EEValidationError} from '../src/e2ee';
 import {encryptPost, decryptPost} from '../src/e2ee_post';
-
-import {E2EE_POST_TYPE} from 'constants';
 
 const b64 = require('base64-arraybuffer');
 

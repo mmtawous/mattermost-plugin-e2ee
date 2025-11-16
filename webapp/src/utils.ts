@@ -1,11 +1,12 @@
-import {Store} from 'redux';
-import {GlobalState} from 'mattermost-redux/types/store';
+import type {Store} from 'redux';
+
+import type {GlobalState} from 'mattermost-redux/types/store';
 
 export const isNode = typeof process !== 'undefined' &&
   process.versions != null &&
   process.versions.node != null;
 
-export function concatArrayBuffers(...args: Array<ArrayBuffer>) {
+export function concatArrayBuffers(...args: ArrayBuffer[]) {
     const buffers = Array.prototype.slice.call(args);
     const buffersLengths = buffers.map((b) => {
         return b.byteLength;
@@ -63,12 +64,12 @@ export function observeStore<T>(store: Store, select: (s: GlobalState) => T, onC
     return unsubscribe;
 }
 
-export function debouncedMerge<T, R>(func: (a: Array<T>) => Promise<R>, reducer: (res: R, org: Array<T>) => R, wait: number): (a: Array<T>) => Promise<R> {
+export function debouncedMerge<T, R>(func: (a: T[]) => Promise<R>, reducer: (res: R, org: T[]) => R, wait: number): (a: T[]) => Promise<R> {
     const merged = new Set<T>();
     let timeout: any = null;
     let cbs_success: any = [];
     let cbs_reject: any = [];
-    return async (arg: Array<T>): Promise<R> => {
+    return async (arg: T[]): Promise<R> => {
         for (const v of arg) {
             merged.add(v);
         }
@@ -115,7 +116,7 @@ export function debouncedMerge<T, R>(func: (a: Array<T>) => Promise<R>, reducer:
     };
 }
 
-export function debouncedMergeMapArrayReducer<K, V>(funcres: Map<K, V>, keys: Array<K>) {
+export function debouncedMergeMapArrayReducer<K, V>(funcres: Map<K, V>, keys: K[]) {
     const ret = new Map();
     for (const v of keys) {
         ret.set(v, funcres.get(v));

@@ -3,7 +3,7 @@ import 'mattermost-webapp/tests/setup';
 import {debouncedMerge, debouncedMergeMapArrayReducer} from '../src/utils';
 
 test('utils/debouncedMerge', async () => {
-    const myget = async (vals: Array<number>): Promise<Map<number, number>> => {
+    const myget = async (vals: number[]): Promise<Map<number, number>> => {
         const ret = new Map();
         for (const v of vals) {
             ret.set(v, v ** 2);
@@ -14,7 +14,7 @@ test('utils/debouncedMerge', async () => {
     jest.useFakeTimers();
     let expectedVals = [1, 2, 4, 5, 6];
     const mygetDebounced = debouncedMerge(
-        async (vals: Array<number>) => {
+        async (vals: number[]) => {
             expect(vals).toStrictEqual(expectedVals);
             return myget(vals);
         },
@@ -41,13 +41,13 @@ test('utils/debouncedMerge', async () => {
 });
 
 test('utils/debouncedMergeErrorFunc', async () => {
-    const myget = async (vals: Array<number>): Promise<Map<number, number>> => {
+    const myget = async (vals: number[]): Promise<Map<number, number>> => {
         if (vals[0] === 1) {
             throw new Error('failure');
         }
     };
 
-    const myreducer = (funcres: Map<number, number>, args: Array<number>): Map<number, number> => {
+    const myreducer = (funcres: Map<number, number>, args: number[]): Map<number, number> => {
         return funcres;
     };
 
@@ -63,11 +63,11 @@ test('utils/debouncedMergeErrorFunc', async () => {
 });
 
 test('utils/debouncedMergeErrorReducer', async () => {
-    const myget = async (vals: Array<number>): Promise<Array<number>> => {
+    const myget = async (vals: number[]): Promise<number[]> => {
         return vals;
     };
 
-    const myreducer = (funcres: Map<number, number>, args: Array<number>): Map<number, number> => {
+    const myreducer = (funcres: Map<number, number>, args: number[]): Map<number, number> => {
         if (args[0] === 1) {
             throw new Error('failure');
         }

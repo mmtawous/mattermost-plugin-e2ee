@@ -1,7 +1,7 @@
 import {GlobalState} from 'mattermost-redux/types/store';
 
-import {PrivateKeyMaterial, PublicKeyMaterial} from './e2ee';
-import {KeyStore} from './keystore';
+import type {PrivateKeyMaterial, PublicKeyMaterial} from './e2ee';
+import type {KeyStore} from './keystore';
 
 export interface CachedPubKey {
     data: PublicKeyMaterial | null;

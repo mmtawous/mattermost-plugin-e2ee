@@ -1,14 +1,17 @@
+import {id as pluginId} from 'manifest';
 import {connect} from 'react-redux';
-import {ActionCreatorsMapObject, bindActionCreators, Dispatch} from 'redux';
-import {GlobalState} from 'mattermost-redux/types/store';
-import {GenericAction, ActionResult, ActionFunc} from 'mattermost-redux/types/actions';
-import {Post} from 'mattermost-redux/types/posts';
+import type {ActionCreatorsMapObject, Dispatch} from 'redux';
+import {bindActionCreators} from 'redux';
+
 import {getCurrentUserId} from 'mattermost-redux/selectors/entities/users';
+import type {GenericAction, ActionResult, ActionFunc} from 'mattermost-redux/types/actions';
+import type {Post} from 'mattermost-redux/types/posts';
+import type {GlobalState} from 'mattermost-redux/types/store';
 
 import {getPubKeys} from 'actions';
-import {id as pluginId} from 'manifest';
-import {PluginState} from 'types';
 import {getPluginState} from 'selectors';
+
+import type {PluginState} from 'types';
 
 import {E2EEPost} from './e2ee_post';
 

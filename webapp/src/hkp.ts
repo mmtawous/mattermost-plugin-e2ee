@@ -2,27 +2,27 @@ import {Client4} from 'mattermost-redux/client';
 import {ClientError} from 'mattermost-redux/client/client4';
 
 interface KeyListing {
-    KeyID: string
-    Algo: number
-    KeyLen: number
-    CreationDate: number
-    ExpirationDate: number | null
-    IsRevoked: boolean
-    IsDisabled: boolean
-    IsExpired: boolean
+    KeyID: string;
+    Algo: number;
+    KeyLen: number;
+    CreationDate: number;
+    ExpirationDate: number | null;
+    IsRevoked: boolean;
+    IsDisabled: boolean;
+    IsExpired: boolean;
 }
 
 // https://datatracker.ietf.org/doc/html/rfc2440#section-9.1
 const ValidAlgos: Set<number> = new Set([1, 2, 3, 16, 17, 18, 19, 20, 21]);
 
 export default class HKP {
-    baseURL: string
+    baseURL: string;
 
     constructor(baseURL: string) {
         this.baseURL = baseURL;
     }
 
-    async index(query: string): Promise<Array<KeyListing>> {
+    async index(query: string): Promise<KeyListing[]> {
         const url = this.baseURL + '/pks/lookup?op=index&options=mr&search=' + encodeURIComponent(query);
         const data = await this.doGet(url);
         return this.parseMachineReadableIndexes(data);
@@ -37,9 +37,9 @@ export default class HKP {
         return data.trim();
     }
 
-    private parseMachineReadableIndexes(data: string): Array<KeyListing> {
+    private parseMachineReadableIndexes(data: string): KeyListing[] {
         const lines = data.split('\n');
-        const ret: Array<KeyListing> = [];
+        const ret: KeyListing[] = [];
         for (let l of lines) {
             l = l.trim();
             const fields = l.split(':');

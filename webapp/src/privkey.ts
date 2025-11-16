@@ -1,18 +1,21 @@
-import {Store, Action} from 'redux';
-import {GlobalState} from 'mattermost-redux/types/store';
-import {getCurrentUserId} from 'mattermost-redux/selectors/entities/users';
-import {ActionFunc, DispatchFunc, GetStateFunc, ActionResult} from 'mattermost-redux/types/actions';
-import {Client4} from 'mattermost-redux/client';
+import type {Store} from 'redux';
+import {Action} from 'redux';
 
-import {PrivateKeyMaterial, PublicKeyMaterial, pubkeyEqual} from './e2ee';
-import {KeyStore, KeyStoreError} from './keystore';
-import {APIClient} from './client';
+import {Client4} from 'mattermost-redux/client';
+import {getCurrentUserId} from 'mattermost-redux/selectors/entities/users';
+import type {ActionFunc, DispatchFunc, GetStateFunc} from 'mattermost-redux/types/actions';
+import {ActionResult} from 'mattermost-redux/types/actions';
+import type {GlobalState} from 'mattermost-redux/types/store';
+
 import {PrivKeyTypes, PubKeyTypes, KSTypes} from './action_types';
-import {gpgBackupFormat, gpgEncrypt, gpgParseBackup} from './backup_gpg';
 import {getPubKeys, setPrivKey} from './actions';
+import {gpgBackupFormat, gpgEncrypt, gpgParseBackup} from './backup_gpg';
+import {APIClient} from './client';
+import {PrivateKeyMaterial, PublicKeyMaterial, pubkeyEqual} from './e2ee';
+import HKP from './hkp';
+import {KeyStore, KeyStoreError} from './keystore';
 import {selectPrivkey, selectKS} from './selectors';
 import {observeStore} from './utils';
-import HKP from './hkp';
 
 type StoreTy = Store;
 

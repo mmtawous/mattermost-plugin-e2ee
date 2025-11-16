@@ -1,22 +1,23 @@
+import type {PublicKeyMaterialJSON} from 'e2ee';
+import {PublicKeyMaterial} from 'e2ee';
+import id from 'manifest';
+import {debouncedMerge, debouncedMergeMapArrayReducer} from 'utils';
+
 import {Client4} from 'mattermost-redux/client';
 import {ClientError} from 'mattermost-redux/client/client4';
-
-import {id as pluginId} from 'manifest';
-import {PublicKeyMaterial, PublicKeyMaterialJSON} from 'e2ee';
-import {debouncedMerge, debouncedMergeMapArrayReducer} from 'utils';
 
 export class GPGBackupDisabledError extends Error { }
 
 export class ClientClass {
-    url!: string
-    getPubKeysDebounced: (userIds: Array<string>) => Promise<Map<string, PublicKeyMaterial>>
+    url!: string;
+    getPubKeysDebounced: (userIds: string[]) => Promise<Map<string, PublicKeyMaterial>>;
 
     constructor() {
         this.getPubKeysDebounced = debouncedMerge(this.getPubKeys.bind(this), debouncedMergeMapArrayReducer, 1);
     }
 
     setServerRoute(url: string) {
-        this.url = url + `/plugins/${pluginId}/api/v1`;
+        this.url = url + `/plugins/${id}/api/v1`;
     }
 
     async pushPubKey(pubkey: PublicKeyMaterial, backupGPG: string | null) {
@@ -24,7 +25,7 @@ export class ClientClass {
             {pubkey: await pubkey.jsonable(), backupGPG});
     }
 
-    async getPubKeys(userIds: Array<string>): Promise<Map<string, PublicKeyMaterial>> {
+    async getPubKeys(userIds: string[]): Promise<Map<string, PublicKeyMaterial>> {
         const resp = await this.doPost(this.url + '/pubkey/get', {userIds});
         const data = await resp.json();
         const ret = new Map();
