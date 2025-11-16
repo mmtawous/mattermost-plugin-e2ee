@@ -13,7 +13,7 @@ design document](docs/design.md) for more details on the attack models
 considered and the cryptographic schemes used.
 
 Please **carefully read** the [known limitations](#known-limitations) before
-using of this plugin. 
+using this plugin. 
 
 This document describes how to [install](#installation) the plugin, it contains
 the [end user documentation](#quick-start) and [instructions to setup a
