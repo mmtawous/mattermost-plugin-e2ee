@@ -26,7 +26,7 @@ import {AppPrivKey} from './privkey';
 import {pubkeyStore, getNewChannelPubkeys, storeChannelPubkeys} from './pubkeys_storage';
 import {selectPubkeys, selectPrivkey, selectKS} from './selectors';
 import type {MyActionResult, PubKeysState} from './types';
-import {PluginRegistry, ContextArgs} from './types/mattermost-webapp';
+import type {PluginRegistry, ContextArgs} from './types/mattermost-webapp';
 import {observeStore, isValidUsername} from './utils';
 
 export default class E2EEHooks {

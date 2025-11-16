@@ -5,9 +5,10 @@ import type {ActionCreatorsMapObject, Dispatch} from 'redux';
 import {bindActionCreators} from 'redux';
 import {KEYLOCK_OPEN, KEYLOCK_CLOSED} from 'svgs';
 
+import type {GlobalState} from '@mattermost/types/store';
+
 import {getCurrentChannelId} from 'mattermost-redux/selectors/entities/common';
-import type {GenericAction, ActionFunc} from 'mattermost-redux/types/actions';
-import type {GlobalState} from 'mattermost-redux/types/store';
+import type {ActionFunc, DispatchFunc} from 'mattermost-redux/types/actions';
 
 import {getChannelEncryptionMethod} from 'actions';
 import {getPluginState} from 'selectors';
@@ -22,7 +23,7 @@ type Actions = {
     getChannelEncryptionMethod: (chanID: string) => Promise<{ data: string }>;
 };
 
-function mapDispatchToProps(dispatch: Dispatch<GenericAction>) {
+function mapDispatchToProps(dispatch: DispatchFunc) {
     return {
         actions: bindActionCreators<ActionCreatorsMapObject<ActionFunc>, Actions>({getChannelEncryptionMethod}, dispatch),
     };

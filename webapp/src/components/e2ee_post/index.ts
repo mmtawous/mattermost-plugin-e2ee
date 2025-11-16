@@ -1,12 +1,12 @@
-import {id as pluginId} from 'manifest';
 import {connect} from 'react-redux';
-import type {ActionCreatorsMapObject, Dispatch} from 'redux';
+import type {ActionCreatorsMapObject} from 'redux';
 import {bindActionCreators} from 'redux';
 
+import type {Post} from '@mattermost/types/posts';
+import type {GlobalState} from '@mattermost/types/store';
+
 import {getCurrentUserId} from 'mattermost-redux/selectors/entities/users';
-import type {GenericAction, ActionResult, ActionFunc} from 'mattermost-redux/types/actions';
-import type {Post} from 'mattermost-redux/types/posts';
-import type {GlobalState} from 'mattermost-redux/types/store';
+import type {ActionResult, ActionFunc, DispatchFunc} from 'mattermost-redux/types/actions';
 
 import {getPubKeys} from 'actions';
 import {getPluginState} from 'selectors';
@@ -26,7 +26,7 @@ type Actions = {
     getPubKeys: (pubkeys: string[]) => Promise<ActionResult>;
 };
 
-function mapDispatchToProps(dispatch: Dispatch<GenericAction>) {
+function mapDispatchToProps(dispatch: DispatchFunc) {
     return {
         actions: bindActionCreators<ActionCreatorsMapObject<ActionFunc>, Actions>({getPubKeys}, dispatch),
     };

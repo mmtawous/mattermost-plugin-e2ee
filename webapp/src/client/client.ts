@@ -3,16 +3,17 @@ import {PublicKeyMaterial} from 'e2ee';
 import id from 'manifest';
 import {debouncedMerge, debouncedMergeMapArrayReducer} from 'utils';
 
-import {Client4} from 'mattermost-redux/client';
-import {ClientError} from 'mattermost-redux/client/client4';
+import {Client4, ClientError} from '@mattermost/client';
 
 export class GPGBackupDisabledError extends Error { }
 
 export class ClientClass {
+    client: Client4;
     url!: string;
     getPubKeysDebounced: (userIds: string[]) => Promise<Map<string, PublicKeyMaterial>>;
 
     constructor() {
+        this.client = new Client4();
         this.getPubKeysDebounced = debouncedMerge(this.getPubKeys.bind(this), debouncedMergeMapArrayReducer, 1);
     }
 
@@ -69,7 +70,7 @@ export class ClientClass {
             headers,
         };
 
-        const response = await fetch(url, Client4.getOptions(options));
+        const response = await fetch(url, this.client.getOptions(options));
 
         if (response.ok) {
             return response;
@@ -77,7 +78,7 @@ export class ClientClass {
 
         const text = await response.text();
 
-        throw new ClientError(Client4.url, {
+        throw new ClientError(this.client.url, {
             message: text || '',
             status_code: response.status,
             url,
@@ -91,7 +92,7 @@ export class ClientClass {
             headers,
         };
 
-        const response = await fetch(url, Client4.getOptions(options));
+        const response = await fetch(url, this.client.getOptions(options));
 
         if (response.ok) {
             return response;
@@ -99,7 +100,7 @@ export class ClientClass {
 
         const text = await response.text();
 
-        throw new ClientError(Client4.url, {
+        throw new ClientError(this.client.url, {
             message: text || '',
             status_code: response.status,
             url,

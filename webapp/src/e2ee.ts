@@ -37,14 +37,14 @@ export class E2EEInvalidJSONMessage extends E2EEError {
     }
 }
 
-type B64Str = string;
-type B64OrBuf = B64Str | ArrayBuffer;
+type B64Str = string
+type B64OrBuf = B64Str | ArrayBuffer
 
 interface PublicKeyMaterialJSONImpl<Bin extends B64OrBuf> {
     sign: Bin;
     encr: Bin;
 }
-export type PublicKeyMaterialJSON = PublicKeyMaterialJSONImpl<B64Str> | PublicKeyMaterialJSONImpl<ArrayBuffer>;
+export type PublicKeyMaterialJSON = PublicKeyMaterialJSONImpl<B64Str> | PublicKeyMaterialJSONImpl<ArrayBuffer>
 
 function fencb64(tob64: boolean) {
     return tob64 ? b64.encode : ((v: ArrayBuffer): ArrayBuffer => v);
@@ -239,8 +239,8 @@ export async function pubkeyEqual(A: PublicKeyMaterial, B: PublicKeyMaterial): P
     return arrayBufferEqual(idA, idB);
 }
 
-type EncryptedKeyWithIDTy = [ArrayBuffer, ArrayBuffer];
-type EncryptedKeyTy = EncryptedKeyWithIDTy[];
+type EncryptedKeyWithIDTy = [ArrayBuffer, ArrayBuffer]
+type EncryptedKeyTy = EncryptedKeyWithIDTy[]
 
 interface EncryptedP2PMessageJSONImpl<Bin extends B64OrBuf> {
     version: number;
@@ -250,7 +250,7 @@ interface EncryptedP2PMessageJSONImpl<Bin extends B64OrBuf> {
     encryptedKey: Array<[Bin, Bin]>;
     encryptedData: Bin;
 }
-export type EncryptedP2PMessageJSON = EncryptedP2PMessageJSONImpl<B64Str> | EncryptedP2PMessageJSONImpl<ArrayBuffer>;
+export type EncryptedP2PMessageJSON = EncryptedP2PMessageJSONImpl<B64Str> | EncryptedP2PMessageJSONImpl<ArrayBuffer>
 
 export function isEncryptedP2PMessageJSON(obj: any, hasb64 = true): obj is EncryptedP2PMessageJSON {
     if (typeof obj !== 'object') {
@@ -267,10 +267,10 @@ export function isEncryptedP2PMessageJSON(obj: any, hasb64 = true): obj is Encry
             }
         }
         return typeof (obj.version) === 'number' &&
-               strOrArray(obj.signature) &&
-               strOrArray(obj.iv) &&
-               strOrArray(obj.pubECDHE) &&
-               strOrArray(obj.encryptedData);
+            strOrArray(obj.signature) &&
+            strOrArray(obj.iv) &&
+            strOrArray(obj.pubECDHE) &&
+            strOrArray(obj.encryptedData);
     } catch (e) {
         return false;
     }

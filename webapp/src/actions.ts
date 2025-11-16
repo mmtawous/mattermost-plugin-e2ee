@@ -4,12 +4,9 @@ import type {ActionFunc, DispatchFunc, GetStateFunc, ActionResult} from 'matterm
 
 import {PubKeyTypes, EncrStatutTypes, ImportModalTypes, PrivKeyTypes} from './action_types';
 import {APIClient} from './client';
-import {StateID} from './constants';
 import type {PrivateKeyMaterial, PublicKeyMaterial} from './e2ee';
 import manifest from './manifest';
 import {getPluginState, selectPubkeys} from './selectors';
-
-const CACHE_PUBKEY_TIMEOUT = 5 * 1000; // 5s
 
 export function getPubKeys(userIds: string[]): ActionFunc {
     return async (dispatch: DispatchFunc, getState: GetStateFunc): Promise<ActionResult> => {
@@ -17,9 +14,9 @@ export function getPubKeys(userIds: string[]): ActionFunc {
         const ret = new Map<string, PublicKeyMaterial>();
         const setIds = new Set(userIds);
 
-        const state_pubkeys = selectPubkeys(getState());
+        const statePubKeys = selectPubkeys(getState());
         for (const userId of userIds) {
-            const cached = state_pubkeys.get(userId);
+            const cached = statePubKeys.get(userId);
             if (typeof cached === 'undefined') {
                 continue;
             }
@@ -51,7 +48,7 @@ export function getPubKeys(userIds: string[]): ActionFunc {
 
 export function getChannelEncryptionMethod(chanID: string): ActionFunc {
     return async (dispatch: DispatchFunc, getState: GetStateFunc) => {
-        // @ts-ignore
+        // @ts-expect-error TS2345
         const method = getPluginState(getState()).chansEncrMethod.get(chanID) || null;
         if (method != null) {
             return {data: method};
@@ -98,7 +95,7 @@ export function sendEphemeralPost(message: string, channelId: string): ActionFun
 }
 
 export function openImportModal(): ActionFunc {
-    return (dispatch: DispatchFunc, getState: GetStateFunc) => {
+    return (dispatch: DispatchFunc) => {
         dispatch({
             type: ImportModalTypes.IMPORT_MODAL_OPEN,
             data: {},
@@ -108,7 +105,7 @@ export function openImportModal(): ActionFunc {
 }
 
 export function closeImportModal(): ActionFunc {
-    return (dispatch: DispatchFunc, getState: GetStateFunc) => {
+    return (dispatch: DispatchFunc) => {
         dispatch({
             type: ImportModalTypes.IMPORT_MODAL_CLOSE,
             data: {},

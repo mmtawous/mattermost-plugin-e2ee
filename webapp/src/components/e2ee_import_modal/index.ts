@@ -1,13 +1,14 @@
 import type {PrivateKeyMaterial} from 'e2ee';
 import {AppPrivKey} from 'privkey';
 import {connect} from 'react-redux';
-import type {ActionCreatorsMapObject, Dispatch} from 'redux';
+import type {ActionCreatorsMapObject} from 'redux';
 import {bindActionCreators} from 'redux';
 
-import type {GenericAction, ActionResult, ActionFunc} from 'mattermost-redux/types/actions';
-import type {GlobalState} from 'mattermost-redux/types/store';
+import type {GlobalState} from '@mattermost/types/store';
 
-import {openImportModal, closeImportModal} from 'actions';
+import type {ActionFunc, ActionResult, DispatchFunc} from 'mattermost-redux/types/actions';
+
+import {closeImportModal, openImportModal} from 'actions';
 import {selectImportModalVisible} from 'selectors';
 
 import {E2EEImportModal} from './e2ee_import_modal';
@@ -24,7 +25,7 @@ type Actions = {
     appPrivKeyImport: (privkey: PrivateKeyMaterial) => Promise<ActionResult>;
 };
 
-function mapDispatchToProps(dispatch: Dispatch<GenericAction>) {
+function mapDispatchToProps(dispatch: DispatchFunc) {
     return {actions:
         bindActionCreators<ActionCreatorsMapObject<ActionFunc>, Actions>({
             close: closeImportModal,
@@ -34,7 +35,8 @@ function mapDispatchToProps(dispatch: Dispatch<GenericAction>) {
     };
 }
 
-export type E2EEImportModalProps = ReturnType<typeof mapStateToProps> &
-ReturnType<typeof mapDispatchToProps>;
+export type E2EEImportModalProps =
+    ReturnType<typeof mapStateToProps> &
+    ReturnType<typeof mapDispatchToProps>;
 
 export default connect(mapStateToProps, mapDispatchToProps)(E2EEImportModal);
