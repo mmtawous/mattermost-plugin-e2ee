@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "esnext",
+    "baseUrl": "./src",
     "lib": [
       "dom",
       "dom.iterable",
@@ -20,7 +21,6 @@
     "noEmit": true,
     "experimentalDecorators": true,
     "jsx": "react",
-    "baseUrl": "./src",
     "typeRoots": [ "./src/types", "./node_modules/@types"],
     "downlevelIteration": true
   },

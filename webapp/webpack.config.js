@@ -5,12 +5,7 @@ const path = require('path');
 const PLUGIN_ID = require('../plugin.json').id;
 
 const NPM_TARGET = process.env.npm_lifecycle_event; //eslint-disable-line no-process-env
-let mode = 'production';
-let devtool = '';
-if (NPM_TARGET === 'debug' || NPM_TARGET === 'debug:watch') {
-    mode = 'development';
-    devtool = 'source-map';
-}
+const isDev = NPM_TARGET === 'debug' || NPM_TARGET === 'debug:watch';
 
 const plugins = [];
 if (NPM_TARGET === 'build:watch' || NPM_TARGET === 'debug:watch') {
@@ -34,15 +29,14 @@ if (NPM_TARGET === 'build:watch' || NPM_TARGET === 'debug:watch') {
     });
 }
 
-module.exports = {
+const config = {
     entry: [
-        './src/index.ts',
+        './src/index.tsx',
     ],
     resolve: {
         modules: [
             'src',
             'node_modules',
-            path.resolve(__dirname),
         ],
         extensions: ['*', '.js', '.jsx', '.ts', '.tsx'],
     },
@@ -77,25 +71,16 @@ module.exports = {
                     },
                 ],
             },
-            {
-                test: /\.(png|jpg|gif)$/,
-                loader: 'url-loader',
-            },
         ],
     },
     externals: {
         react: 'React',
+        'react-dom': 'ReactDOM',
         redux: 'Redux',
         'react-redux': 'ReactRedux',
         'prop-types': 'PropTypes',
         'react-bootstrap': 'ReactBootstrap',
         'react-router-dom': 'ReactRouterDom',
-        'node-webcrypto-ossl': {
-            commonjs: 'node-webcrypto-ossl',
-        },
-        'fake-indexeddb': {
-            commonjs: 'fake-indexeddb',
-        },
     },
     output: {
         devtoolNamespace: PLUGIN_ID,
@@ -103,7 +88,12 @@ module.exports = {
         publicPath: '/',
         filename: 'main.js',
     },
-    devtool,
-    mode,
+    mode: (isDev) ? 'eval-source-map' : 'production',
     plugins,
 };
+
+if (isDev) {
+    Object.assign(config, {devtool: 'eval-source-map'});
+}
+
+module.exports = config;

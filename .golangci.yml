@@ -7,10 +7,7 @@ linters-settings:
     simplify: true
   goimports:
     local-prefixes: github.com/quarkslab/mattermost-plugin-e2ee
-  golint:
-    min-confidence: 0
   govet:
-    check-shadowing: true
     enable-all: true
     disable:
       - fieldalignment
@@ -33,8 +30,9 @@ linters:
     - ineffassign
     - misspell
     - nakedret
-    - staticcheck
     - structcheck
+    - revive
+    - staticcheck
     - stylecheck
     - typecheck
     - unconvert
@@ -56,3 +54,6 @@ issues:
       linters:
         - bodyclose
         - scopelint # https://github.com/kyoh86/scopelint/issues/4
+    - linters:
+        - revive
+      text: unused-parameter
