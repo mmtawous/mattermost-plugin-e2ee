@@ -5,8 +5,6 @@ import {generateGPGKey, initOpenGPG, finiOpenGPG} from './helpers';
 import {gpgEncrypt, gpgBackupFormat, gpgParseBackup} from '../src/backup_gpg';
 import {PrivateKeyMaterial} from '../src/e2ee';
 
-const b64 = require('base64-arraybuffer');
-
 test('e2ee/backupGPGFormat', async () => {
     const privkey = await PrivateKeyMaterial.create(true /* exportable */);
 

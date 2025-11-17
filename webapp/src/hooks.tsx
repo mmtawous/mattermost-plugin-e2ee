@@ -2,19 +2,13 @@ import React from 'react';
 import type {Store} from 'redux';
 
 import * as UserActions from 'mattermost-redux/actions/users';
-import {Client4} from 'mattermost-redux/client';
 import {getChannel} from 'mattermost-redux/selectors/entities/channels';
 import {getCurrentChannelId} from 'mattermost-redux/selectors/entities/common';
 import {getCurrentUser, getCurrentUserId, makeGetProfilesInChannel, getUser} from 'mattermost-redux/selectors/entities/users';
-import type {Channel} from 'mattermost-redux/types/channels';
-import type {Post} from 'mattermost-redux/types/posts';
-import type {UserProfile} from 'mattermost-redux/types/users';
 
 import {EncrStatutTypes, EventTypes, PubKeyTypes} from './action_types';
 import {getPubKeys, getChannelEncryptionMethod, sendEphemeralPost, openImportModal} from './actions';
 import {APIClient, GPGBackupDisabledError} from './client';
-import {getE2EEPostUpdateSupported} from './compat';
-import Icon from './components/icon';
 import {E2EE_CHAN_ENCR_METHOD_NONE, E2EE_CHAN_ENCR_METHOD_P2P, E2EE_POST_TYPE} from './constants';
 // eslint-disable-next-line import/no-unresolved
 import type {PublicKeyMaterial} from './e2ee';
@@ -24,10 +18,16 @@ import {sendDesktopNotification} from './notification_actions';
 import {shouldNotify} from './notifications';
 import {AppPrivKey} from './privkey';
 import {pubkeyStore, getNewChannelPubkeys, storeChannelPubkeys} from './pubkeys_storage';
-import {selectPubkeys, selectPrivkey, selectKS} from './selectors';
+import {selectPubkeys, selectPrivkey} from './selectors';
 import type {MyActionResult, PubKeysState} from './types';
-import type {PluginRegistry, ContextArgs} from './types/mattermost-webapp';
 import {observeStore, isValidUsername} from './utils';
+import { PluginRegistry } from 'types/mattermost-webapp'
+import Icon from 'components/icon'
+import { Channel } from '@mattermost/types/channels'
+import { UserProfile } from '@mattermost/types/users'
+import { Post } from '@mattermost/types/posts'
+
+import type {ContextArgs} from './types/mattermost-webapp/index.ts';
 
 export default class E2EEHooks {
     store: Store;
@@ -51,9 +51,7 @@ export default class E2EEHooks {
 
     register(registry: PluginRegistry) {
         registry.registerMessageWillBePostedHook(this.messageWillBePosted.bind(this));
-        if (getE2EEPostUpdateSupported()) {
-            registry.registerMessageWillBeUpdatedHook(this.messageWillBeUpdated.bind(this));
-        }
+        registry.registerMessageWillBeUpdatedHook(this.messageWillBeUpdated.bind(this));
         registry.registerSlashCommandWillBePostedHook(this.slashCommand.bind(this));
 
         registry.registerWebSocketEventHandler('custom_com.quarkslab.e2ee_channelStateChanged', this.channelStateChanged.bind(this));
@@ -62,9 +60,16 @@ export default class E2EEHooks {
         registry.registerReconnectHandler(this.onReconnect.bind(this));
 
         registry.registerChannelHeaderButtonAction(
-            // eslint-disable-next-line react/jsx-filename-extension
             <Icon/>,
-            this.toggleEncryption.bind(this),
+            () => {
+                const chanID = getCurrentChannelId(this.store.getState());
+                const channel = getChannel(this.store.getState(), chanID);
+                // fire-and-forget the async toggle
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                if (channel) {
+                    this.toggleEncryption(channel);
+                }
+            },
             'Toggle channel encryption',
             'Toggle channel encryption',
         );
@@ -83,7 +88,7 @@ export default class E2EEHooks {
             }
             const state = this.store.getState();
             const channel = getChannel(state, post.channel_id);
-            if (channel.type === 'D' || channel.type === 'G') {
+            if (channel && (channel.type === 'D' || channel.type === 'G')) {
                 // The mattermost system already sends a notification (but w/o
                 // the decrypted message. Nothing we can do about it for now as
                 // this callback is called **after** this notification happens).
@@ -336,14 +341,14 @@ export default class E2EEHooks {
         return this.encryptPost(post);
     }
 
-    private async messageWillBeUpdated(post: Post): Promise<{post: Post} | {error: {message: string}}> {
-        if (isEncryptedPost(post)) {
-            delete post.props.e2ee;
+    private async messageWillBeUpdated(post: Partial<Post>, oldPost: Post): Promise<{post: Post} | {error: {message: string}}> {
+        if (isEncryptedPost(post as Post)) {
+            delete post.props?.e2ee;
         }
         if (post.message === '') {
-            return {post};
+            return {post: post as Post};
         }
-        const ret = await this.encryptPost(post, true /* isUpdate */);
+        const ret = await this.encryptPost(post as Post, true /* isUpdate */);
         // HACK: we need to set a different message than the previous one,
         // otherwise the server won't considered this message as updated, and
         // we won't see the "Edited" mention.

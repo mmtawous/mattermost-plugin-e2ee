@@ -1,13 +1,10 @@
 import type {Store} from 'redux';
-import {Action} from 'redux';
 
 import {Client4} from 'mattermost-redux/client';
 import {getCurrentUserId} from 'mattermost-redux/selectors/entities/users';
-import type {ActionFunc, DispatchFunc, GetStateFunc} from 'mattermost-redux/types/actions';
-import {ActionResult} from 'mattermost-redux/types/actions';
-import type {GlobalState} from 'mattermost-redux/types/store';
+import type {ActionFuncAsync, DispatchFunc, GetStateFunc, ActionResult} from 'mattermost-redux/types/actions';
 
-import {PrivKeyTypes, PubKeyTypes, KSTypes} from './action_types';
+import {KSTypes} from './action_types';
 import {getPubKeys, setPrivKey} from './actions';
 import {gpgBackupFormat, gpgEncrypt, gpgParseBackup} from './backup_gpg';
 import {APIClient} from './client';
@@ -16,6 +13,7 @@ import HKP from './hkp';
 import {KeyStore, KeyStoreError} from './keystore';
 import {selectPrivkey, selectKS} from './selectors';
 import {observeStore} from './utils';
+import { GlobalState } from '@mattermost/types/store'
 
 type StoreTy = Store;
 
@@ -28,8 +26,8 @@ interface GeneratedKey {
 }
 
 export class AppPrivKey {
-    static init(store: StoreTy): ActionFunc {
-        return async (dispatch: DispatchFunc, getState: GetStateFunc) => {
+    static init(store: StoreTy): ActionFuncAsync {
+        return async (): Promise<ActionResult> => {
             const user = getCurrentUserId(store.getState());
             let ks: KeyStore;
             try {
@@ -60,22 +58,24 @@ export class AppPrivKey {
         }
     }
 
-    static getUserPubkey(): ActionFunc {
-        return async (dispatch: DispatchFunc, getState: GetStateFunc) => {
+    static getUserPubkey(): ActionFuncAsync<PublicKeyMaterial | null> {
+        return async (dispatch: DispatchFunc, getState: GetStateFunc): Promise<ActionResult> => {
             const userId = getCurrentUserId(getState());
-
-            // @ts-ignore
             const {data: pubkeys, error} = await dispatch(getPubKeys([userId]));
             if (error) {
                 return {error};
             }
-            return {data: pubkeys.get(userId) || null};
+
+            if (!pubkeys || !pubkeys.has(userId)) {
+                return {data: null};
+            }
+
+            return {data: pubkeys.get(userId)};
         };
     }
 
-    static userHasPubkey(): ActionFunc {
-        return async (dispatch: DispatchFunc, getState: GetStateFunc) => {
-            // @ts-ignore
+    static userHasPubkey(): ActionFuncAsync {
+        return async (dispatch: DispatchFunc) => {
             const {data, error} = await dispatch(AppPrivKey.getUserPubkey());
             if (error) {
                 return {data: false};
@@ -84,8 +84,8 @@ export class AppPrivKey {
         };
     }
 
-    static import(backupGPG: string, force: boolean): ActionFunc {
-        return async (dispatch: DispatchFunc, getState: GetStateFunc) => {
+    static import(backupGPG: string, force: boolean): ActionFuncAsync {
+        return async (dispatch: DispatchFunc) => {
             try {
                 const key = await gpgParseBackup(backupGPG, false /* exportable */);
                 if (!force) {
@@ -101,7 +101,7 @@ export class AppPrivKey {
         };
     }
 
-    static load(ks: KeyStore): ActionFunc {
+    static load(ks: KeyStore): ActionFuncAsync {
         return async (dispatch: DispatchFunc, getState: GetStateFunc) => {
             let key: PrivateKeyMaterial;
             try {
@@ -126,25 +126,27 @@ export class AppPrivKey {
         if (error) {
             throw error;
         }
-        if (data !== null &&
-            (!(await pubkeyEqual(await key.pubKey(), data)))) {
+        if (data !== null && data !== undefined && ! await pubkeyEqual(key.pubKey(), data)) {
             return false;
         }
         return true;
     }
 
-    static generate(): ActionFunc {
-        return async (dispatch: DispatchFunc, getState: GetStateFunc) => {
-            const privkeyProm = PrivateKeyMaterial.create(true /* extractible */);
+    static generate(): ActionFuncAsync {
+        return async (dispatch: DispatchFunc) => {
+            const privkeyProm = PrivateKeyMaterial.create(true /* exportable */);
             const gpgArmoredPubKeyProm = dispatch(this.getGPGPubKey());
             let privkey: PrivateKeyMaterial = await privkeyProm;
             const backupClear = await gpgBackupFormat(privkey);
             let backupGPG;
             try {
-                // @ts-ignore
                 const {data: gpgArmoredPubKey, error} = await gpgArmoredPubKeyProm;
                 if (error) {
                     throw error;
+                }
+                if (typeof gpgArmoredPubKey === 'undefined' || gpgArmoredPubKey === null) {
+                    // Should not happen
+                    throw new Error('no GPG public key returned');
                 }
                 backupGPG = {data: await gpgEncrypt(backupClear, gpgArmoredPubKey)};
             } catch (e) {
@@ -163,8 +165,8 @@ export class AppPrivKey {
         };
     }
 
-    private static getGPGPubKey() {
-        return async (dispatch: DispatchFunc, getState: GetStateFunc) => {
+    private static getGPGPubKey() : ActionFuncAsync<string> {
+        return async (_dispatch: DispatchFunc, getState: GetStateFunc) => {
             try {
                 const userId = getCurrentUserId(getState());
                 const email = (await Client4.getUser(userId)).email;

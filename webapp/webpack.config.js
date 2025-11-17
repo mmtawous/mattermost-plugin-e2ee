@@ -1,10 +1,9 @@
 const exec = require('child_process').exec;
-
 const path = require('path');
 
 const PLUGIN_ID = require('../plugin.json').id;
 
-const NPM_TARGET = process.env.npm_lifecycle_event; //eslint-disable-line no-process-env
+const NPM_TARGET = process.env.npm_lifecycle_event; // eslint-disable-line no-process-env
 const isDev = NPM_TARGET === 'debug' || NPM_TARGET === 'debug:watch';
 
 const plugins = [];
@@ -12,17 +11,12 @@ if (NPM_TARGET === 'build:watch' || NPM_TARGET === 'debug:watch') {
     plugins.push({
         apply: (compiler) => {
             compiler.hooks.watchRun.tap('WatchStartPlugin', () => {
-                // eslint-disable-next-line no-console
                 console.log('Change detected. Rebuilding webapp.');
             });
             compiler.hooks.afterEmit.tap('AfterEmitPlugin', () => {
                 exec('cd .. && make deploy-from-watch', (err, stdout, stderr) => {
-                    if (stdout) {
-                        process.stdout.write(stdout);
-                    }
-                    if (stderr) {
-                        process.stderr.write(stderr);
-                    }
+                    if (stdout) process.stdout.write(stdout);
+                    if (stderr) process.stderr.write(stderr);
                 });
             });
         },
@@ -30,15 +24,10 @@ if (NPM_TARGET === 'build:watch' || NPM_TARGET === 'debug:watch') {
 }
 
 const config = {
-    entry: [
-        './src/index.tsx',
-    ],
+    entry: ['./src/index.ts'],
     resolve: {
-        modules: [
-            'src',
-            'node_modules',
-        ],
-        extensions: ['*', '.js', '.jsx', '.ts', '.tsx'],
+        modules: ['src', 'node_modules'],
+        extensions: ['.*', '.js', '.jsx', '.ts', '.tsx'],
     },
     module: {
         rules: [
@@ -49,8 +38,6 @@ const config = {
                     loader: 'babel-loader',
                     options: {
                         cacheDirectory: true,
-
-                        // Babel configuration is in babel.config.js because jest requires it to be there.
                     },
                 },
             },
@@ -58,14 +45,15 @@ const config = {
                 test: /\.(scss|css)$/,
                 use: [
                     'style-loader',
-                    {
-                        loader: 'css-loader',
-                    },
+                    'css-loader',
                     {
                         loader: 'sass-loader',
                         options: {
                             sassOptions: {
-                                includePaths: ['node_modules/compass-mixins/lib', 'sass'],
+                                includePaths: [
+                                    'node_modules/compass-mixins/lib',
+                                    'sass',
+                                ],
                             },
                         },
                     },
@@ -88,12 +76,13 @@ const config = {
         publicPath: '/',
         filename: 'main.js',
     },
-    mode: (isDev) ? 'eval-source-map' : 'production',
+    devtool: isDev ? 'source-map' : false,
+    stats: {
+        modules: true,
+        modulesSpace: 999,
+        reasons: true,
+    },
     plugins,
 };
-
-if (isDev) {
-    Object.assign(config, {devtool: 'eval-source-map'});
-}
 
 module.exports = config;

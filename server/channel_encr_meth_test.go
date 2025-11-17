@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/mattermost/mattermost/server/public/plugin/plugintest"
 )
 
 func Test_chanencrmeth_set_noexist(t *testing.T) {

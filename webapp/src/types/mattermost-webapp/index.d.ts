@@ -14,6 +14,13 @@ import type {ProductScope} from '@mattermost/types/products';
 export type UniqueIdentifier = string;
 export type ReactResolvable = React.ReactNode | React.ElementType;
 
+export type ContextArgs = {
+    channel_id: string;
+    team_id: string;
+    root_id: string;
+    parent_id?: string;
+};
+
 export type PluginComponent = {
     id: string;
     pluginId: string;

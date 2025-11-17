@@ -8,6 +8,10 @@ import (
 	"runtime/debug"
 	"strings"
 	"time"
+
+	"github.com/gorilla/mux"
+	"github.com/mattermost/mattermost/server/public/model"
+	"github.com/mattermost/mattermost/server/public/plugin"
 )
 
 type HTTPHandlerFuncWithContext func(c *Context, w http.ResponseWriter, r *http.Request)

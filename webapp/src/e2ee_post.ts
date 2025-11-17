@@ -1,28 +1,15 @@
 /* eslint-disable global-require */
 
-import type {Post} from 'mattermost-redux/types/posts.js';
 
+import { Post } from '@mattermost/types/posts'
 import {E2EE_POST_TYPE} from './constants';
 import type {PrivateKeyMaterial, PublicKeyMaterial, EncryptedP2PMessageJSON} from './e2ee';
 import {EncryptedP2PMessage} from './e2ee';
-import {isNode} from './utils';
 
-// TODO: put this mess somewhere else, or do it with helpers
-let UtilTextEncoder: typeof TextEncoder;
-let UtilTextDecoder: typeof TextDecoder;
-
-if (isNode) {
-    const nodeUtil = require('util');
-    UtilTextEncoder = nodeUtil.TextEncoder;
-    UtilTextDecoder = nodeUtil.TextDecoder;
-} else {
-    UtilTextEncoder = TextEncoder;
-    UtilTextDecoder = TextDecoder;
-}
 
 export async function encryptPost(post: Post, privkey: PrivateKeyMaterial, pubkeys: PublicKeyMaterial[]) {
-    const postMsg = new UtilTextEncoder().encode(post.message);
-    const encrMsg = await EncryptedP2PMessage.encrypt(postMsg, privkey, pubkeys);
+    const postMsg = new TextEncoder().encode(post.message);
+    const encrMsg = await EncryptedP2PMessage.encrypt(postMsg.buffer, privkey, pubkeys);
     const encrMsgJson = await encrMsg.jsonable(true /* encb64 */);
     post.props = {e2ee: encrMsgJson};
     post.message = 'Encrypted message';
@@ -39,7 +26,7 @@ export async function decryptPost(e2ee: EncryptedP2PMessageJSON, senderkey: Publ
     const encrMsg = await EncryptedP2PMessage.fromJsonable(e2ee, true /* decb64 */);
 
     const msg = await encrMsg.verifyAndDecrypt(senderkey, privkey);
-    return new UtilTextDecoder('utf-8').decode(msg);
+    return new TextDecoder().decode(msg);
 }
 
 export function isEncryptedPost(post: Post): boolean {

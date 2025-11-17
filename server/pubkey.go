@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"math/big"
 
-
+	"github.com/mattermost/mattermost/server/public/model"
 )
 
 var ECCurve = elliptic.P256()
@@ -138,7 +138,7 @@ func (p *Plugin) GetChannelMembersWithoutKeys(chanID string) ([]string, *model.A
 		return ret, appErr
 	}
 
-	for _, member := range *members {
+	for _, member := range members {
 		userID := member.UserId
 		hasKey, appErr := p.HasUserPubKey(userID)
 		if appErr != nil {

@@ -58,7 +58,7 @@ export class E2EEImportModal extends React.Component<E2EEImportModalProps, E2EEI
         });
     }
 
-    handleCancel(e: any) {
+    handleCancel() {
         this.cleanup();
         this.props.actions.close();
     }

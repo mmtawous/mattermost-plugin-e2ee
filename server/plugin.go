@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"strings"
 	"sync"
-	
+
 	"github.com/mattermost/mattermost/server/public/model"
 	"github.com/mattermost/mattermost/server/public/plugin"
-	"github.com/mattermost/mattermost/server/public/pluginapi"
-	"github.com/mattermost/mattermost/server/public/pluginapi/cluster"
 
 	"github.com/pkg/errors"
 
@@ -72,7 +70,7 @@ func (p *Plugin) OnActivate() error {
 		return errors.Wrap(err, "OnActivate: failed to register command")
 	}
 
-	botID, err := p.Helpers.EnsureBot(&model.Bot{
+	botID, err := p.API.EnsureBotUser(&model.Bot{
 		Username:    "e2ee",
 		DisplayName: "E2EE",
 		Description: "Created by the E2EE plugin.",

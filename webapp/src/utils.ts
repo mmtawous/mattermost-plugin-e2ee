@@ -1,25 +1,36 @@
+import { GlobalState } from '@mattermost/types/store'
 import type {Store} from 'redux';
 
-import type {GlobalState} from 'mattermost-redux/types/store';
+export function base64ToArrayBuffer(base64: string): ArrayBuffer {
+    var binaryString = atob(base64);
+    var bytes = new Uint8Array(binaryString.length);
+    for (var i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer;
+}
 
-export const isNode = typeof process !== 'undefined' &&
-  process.versions != null &&
-  process.versions.node != null;
+export function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+}
 
-export function concatArrayBuffers(...args: ArrayBuffer[]) {
-    const buffers = Array.prototype.slice.call(args);
-    const buffersLengths = buffers.map((b) => {
-        return b.byteLength;
-    });
-    const totalBufferlength = buffersLengths.reduce((p, c) => {
-        return p + c;
-    }, 0);
-    const unit8Arr = new Uint8Array(totalBufferlength);
-    buffersLengths.reduce((p, c, i) => {
-        unit8Arr.set(new Uint8Array(buffers[i]), p);
-        return p + c;
-    }, 0);
-    return unit8Arr.buffer;
+export function concatArrayBuffers(...buffers: ArrayBuffer[]): ArrayBuffer {
+  const totalLength = buffers.reduce((sum, b) => sum + b.byteLength, 0);
+  const out = new Uint8Array(totalLength);
+
+  let offset = 0;
+  for (const buf of buffers) {
+    out.set(new Uint8Array(buf), offset);
+    offset += buf.byteLength;
+  }
+
+  return out.buffer;
 }
 
 export function eqSet<T>(A: Set<T>, B: Set<T>) {

@@ -1,4 +1,5 @@
-import {id as pluginId} from 'manifest';
+import manifest from 'manifest';
+const {id} = manifest;
 
 const E2EE_POST_TYPE = 'custom_e2ee';
 
@@ -7,7 +8,7 @@ const E2EE_POST_TYPE = 'custom_e2ee';
     return namespace + '-' + name as `${NS}-${N}`;
 }*/
 
-const StateID = `plugins-${pluginId}`;
+const StateID = `plugins-${id}`;
 
 const E2EE_CHAN_ENCR_METHOD_NONE = 'none';
 const E2EE_CHAN_ENCR_METHOD_P2P = 'p2p';

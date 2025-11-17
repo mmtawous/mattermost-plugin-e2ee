@@ -19,7 +19,7 @@ const config = {
         ['@babel/preset-react', {
             useBuiltIns: true,
         }],
-        ['@babel/typescript', {
+        ['@babel/preset-typescript', {
             allExtensions: true,
             isTSX: true,
         }],

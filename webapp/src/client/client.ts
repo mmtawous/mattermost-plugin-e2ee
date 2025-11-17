@@ -1,6 +1,8 @@
 import type {PublicKeyMaterialJSON} from 'e2ee';
 import {PublicKeyMaterial} from 'e2ee';
-import id from 'manifest';
+import manifest from 'manifest';
+const {id} = manifest;
+
 import {debouncedMerge, debouncedMergeMapArrayReducer} from 'utils';
 
 import {Client4, ClientError} from '@mattermost/client';
@@ -57,7 +59,7 @@ export class ClientClass {
         try {
             return (await this.doGet(this.url + '/gpg/key_server').then((r) => r.json())).url;
         } catch (e) {
-            if (e.status_code === 404) {
+            if (e instanceof ClientError && e.status_code === 404) {
                 throw new GPGBackupDisabledError();
             }
             throw e;

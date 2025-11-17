@@ -2,6 +2,8 @@ package main
 
 import (
 	"net/http"
+
+	"github.com/mattermost/mattermost/server/public/model"
 )
 
 func (p *Plugin) SendGPGBackup(userID string) *model.AppError {

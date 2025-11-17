@@ -4,6 +4,7 @@
 
 import React, {Component} from 'react';
 import {Modal} from 'react-bootstrap';
+import { FormattedMessage } from 'react-intl'
 
 export type Props = {
 
@@ -178,7 +179,7 @@ export default class ConfirmModal extends Component<Props, State> {
                 className={'modal-confirm ' + this.props.modalClass}
                 dialogClassName='a11y__modal'
                 show={this.props.show}
-                onHide={this.props.onCancel}
+                onHide={() => this.props.onCancel(this.state.checked)}
                 onExited={this.props.onExited}
                 id='confirmModal'
                 role='dialog'
@@ -187,7 +188,7 @@ export default class ConfirmModal extends Component<Props, State> {
             >
                 <Modal.Header closeButton={false}>
                     <Modal.Title
-                        componentClass='h1'
+                        as='h1'
                         id='confirmModalLabel'
                     >
                         {this.props.title}

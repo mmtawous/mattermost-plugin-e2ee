@@ -1,14 +1,16 @@
 import {combineReducers} from 'redux';
 
 import {ChannelTypes} from 'mattermost-redux/action_types';
-import type {GenericAction} from 'mattermost-redux/types/actions';
-import {RelationOneToOne} from 'mattermost-redux/types/utilities';
 
 import {PubKeyTypes, PrivKeyTypes, EncrStatutTypes, EventTypes, ImportModalTypes, KSTypes} from './action_types';
 import type {PrivateKeyMaterial} from './e2ee';
-import {PublicKeyMaterial} from './e2ee';
 import type {KeyStore} from './keystore';
 import type {PubKeysState, ChansEncrState, ImportModalState} from './types';
+
+interface GenericAction {
+    type: string;
+    data?: any;
+}
 
 function pubkeys(state: PubKeysState = new Map(), action: GenericAction) {
     switch (action.type) {

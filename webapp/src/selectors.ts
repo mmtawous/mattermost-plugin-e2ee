@@ -1,9 +1,8 @@
 import {getConfig} from 'mattermost-redux/selectors/entities/general';
-import type {GlobalState} from 'mattermost-redux/types/store';
 
 import {StateID} from './constants';
-import {id as pluginId} from './manifest';
 import type {PluginState} from './types';
+import { GlobalState } from '@mattermost/types/store'
 
 export function getPluginState(state: GlobalState): PluginState {
     // @ts-ignore

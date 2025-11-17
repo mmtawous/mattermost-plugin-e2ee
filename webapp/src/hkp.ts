@@ -1,5 +1,4 @@
-import {Client4} from 'mattermost-redux/client';
-import {ClientError} from 'mattermost-redux/client/client4';
+import {Client4, ClientError} from '@mattermost/client';
 
 interface KeyListing {
     KeyID: string;
@@ -73,7 +72,7 @@ export default class HKP {
         const resp = await fetch(url);
         const data = await resp.text();
         if (!resp.ok) {
-            throw new ClientError(Client4.url, {
+            throw new ClientError(new Client4().url, {
                 message: data || '',
                 status_code: resp.status,
                 url,

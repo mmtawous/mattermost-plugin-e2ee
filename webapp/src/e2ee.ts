@@ -3,8 +3,7 @@ import {webcrypto} from 'webcrypto';
 import type {KeyStore} from './keystore';
 import {concatArrayBuffers, eqSet, arrayBufferEqual} from './utils';
 
-const b64 = require('base64-arraybuffer');
-
+import { arrayBufferToBase64, base64ToArrayBuffer } from './utils';
 const subtle = webcrypto.subtle;
 
 const CurveName = 'P-256';
@@ -47,11 +46,11 @@ interface PublicKeyMaterialJSONImpl<Bin extends B64OrBuf> {
 export type PublicKeyMaterialJSON = PublicKeyMaterialJSONImpl<B64Str> | PublicKeyMaterialJSONImpl<ArrayBuffer>
 
 function fencb64(tob64: boolean) {
-    return tob64 ? b64.encode : ((v: ArrayBuffer): ArrayBuffer => v);
+    return tob64 ? arrayBufferToBase64 : ((v: ArrayBuffer): ArrayBuffer => v);
 }
 
 function fdecb64(fromb64: boolean) {
-    return fromb64 ? b64.decode : ((v: ArrayBuffer): ArrayBuffer => v);
+    return fromb64 ? base64ToArrayBuffer : ((v: ArrayBuffer): ArrayBuffer => v);
 }
 
 export class PublicKeyMaterial {
@@ -65,7 +64,7 @@ export class PublicKeyMaterial {
         this.cachedID = null;
     }
 
-    async jsonable(tob64 = true): Promise<PublicKeyMaterialJSON> {
+    async jsonable(tob64 = true): Promise<PublicKeyMaterialJSONImpl<B64OrBuf>> {
         const encData = fencb64(tob64);
         const ecdhData = await subtle.exportKey('raw', this.ecdh);
         const ecdsaData = await subtle.exportKey('raw', this.ecdsa);
@@ -327,8 +326,11 @@ export class EncryptedP2PMessage {
         }
 
         // Encrypt data
-        ret.encryptedData = await subtle.encrypt({name: 'AES-CTR', counter: ret.iv, length: 64}, msgKey, data);
+        ret.encryptedData = await subtle.encrypt({name: 'AES-CTR', counter: ret.iv.buffer as ArrayBuffer, length: 64}, msgKey, data);
 
+        console.log(await subtle.exportKey('jwk', msgKey))
+        console.log(arrayBufferToBase64(ret.encryptedData))
+        
         // Sign data
         ret.encryptedKey = await Promise.all(keysProm);
         ret.signature = await subtle.sign({name: 'ECDSA', hash: 'SHA-256'},
@@ -349,7 +351,7 @@ export class EncryptedP2PMessage {
         const encrMsgLen = new DataView(this.encryptedData).byteLength;
         const encrMsgLenBuf = new ArrayBuffer(4);
         new DataView(encrMsgLenBuf).setUint32(0, encrMsgLen, true /* littleEndian */);
-        return concatArrayBuffers(this.iv, await pubid, encrKeys, encrMsgLenBuf, this.encryptedData);
+        return concatArrayBuffers(this.iv.buffer as ArrayBuffer, await pubid, encrKeys.buffer, encrMsgLenBuf, this.encryptedData);
     }
 
     // Throws E2EEValidationError if verification fails
@@ -401,7 +403,7 @@ export class EncryptedP2PMessage {
         }
         return {
             signature: encData(this.signature),
-            iv: encData(this.iv),
+            iv: encData(this.iv.buffer as ArrayBuffer),
             pubECDHE: encData(pubECDHEData),
             encryptedKey: encryptedKeyData,
             encryptedData: encData(this.encryptedData),
@@ -409,14 +411,14 @@ export class EncryptedP2PMessage {
         };
     }
 
-    static async fromJsonable(data: any, fromb64 = true): Promise<EncryptedP2PMessage> {
+    static async fromJsonable(data: EncryptedP2PMessage, fromb64 = true): Promise<EncryptedP2PMessage> {
         if (!isEncryptedP2PMessageJSON(data, fromb64)) {
             throw new E2EEInvalidJSONMessage();
         }
         const decData = fdecb64(fromb64);
         const ret = new EncryptedP2PMessage();
         ret.signature = decData(data.signature);
-        ret.iv = decData(data.iv);
+        ret.iv = new Uint8Array(decData(data.iv));
         ret.encryptedData = decData(data.encryptedData);
         ret.encryptedKey = [];
         for (const [pubkeyID, encrKey] of data.encryptedKey) {
